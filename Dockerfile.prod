@@ -1,0 +1,30 @@
+FROM node:12.20.1-alpine3.10
+
+RUN mkdir -p /usr/src/app
+
+RUN apk update
+RUN apk add nginx
+RUN apk add --no-cache git
+
+WORKDIR /usr/src/app
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+ENV NODE_ENV production
+
+COPY package.json /usr/src/app/package.json
+RUN npm install --production=false
+
+COPY . /usr/src/app
+RUN npm run build
+
+RUN mkdir -p /usr/share/nginx/html
+RUN mkdir -p /run/nginx
+WORKDIR /usr/share/nginx/html
+
+RUN mv /usr/src/app/build/* /usr/share/nginx/html/
+RUN rm -rf /usr/src/app
+RUN rm  /etc/nginx/conf.d/*
+COPY ./opi.conf /etc/nginx/conf.d/
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

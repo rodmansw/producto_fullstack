@@ -1,0 +1,48 @@
+version: '3.6'
+services:
+  postgres:
+    image: postgres:12.3
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+  graphql-engine:
+    image: hasura/graphql-engine:latest.cli-migrations-v2
+    volumes:
+      - ./hasura/migrations:/hasura-migrations
+      - ./hasura/metadata:/hasura-metadata
+    ports:
+      - ${HASURA_PORT}:${HASURA_PORT}
+    depends_on:
+      - postgres
+    restart: always
+    environment:
+      HASURA_GRAPHQL_SERVER_PORT: ${HASURA_PORT}
+      HASURA_GRAPHQL_DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true'
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+  app:
+    build: .
+    expose:
+      - ${APP_PORT}
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    depends_on:
+      - graphql-engine
+    links:
+      - 'graphql-engine:hasura-server'
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      REACT_APP_API_PORT: ${HASURA_PORT}
+      REACT_APP_USERNAME:
+      REACT_APP_API_KEY:
+      REACT_APP_TABLE_NAME:
+      REACT_APP_API_URL: http://hasura-server:${HASURA_PORT} 
+volumes:
+  db_data:

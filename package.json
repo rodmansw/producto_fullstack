@@ -22,7 +22,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "env-cmd -f .env docker-compose up -d --force-recreate",
+    "server-build": "env-cmd -f .env docker-compose build --no-cache"
   },
   "eslintConfig": {
     "extends": [
@@ -41,5 +43,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "csv-parser": "^3.0.0",
+    "env-cmd": "^10.1.0",
+    "hasura-cli": "^1.3.3"
   }
 }
