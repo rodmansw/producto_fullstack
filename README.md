@@ -23,6 +23,10 @@ Para esto puedes ver la aplicación de Fulstack Base en [geo.opianalytics.com](h
 
 Inicia sesión con el usuario y la contaseña que enviamos a tu correo.
 
+### `npm run server`
+
+Para correr todas las partes de la aplicación con Docker compose
+
 ## Documentación
 
 [React](https://reactjs.org/)
